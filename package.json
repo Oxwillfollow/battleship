@@ -1,14 +1,14 @@
 {
-  "name": "webpack-template",
+  "name": "battleship",
   "version": "1.0.0",
   "description": "",
-  "homepage": "https://github.com/Oxwillfollow/webpack-template#readme",
+  "homepage": "https://github.com/Oxwillfollow/battleship#readme",
   "bugs": {
-    "url": "https://github.com/Oxwillfollow/webpack-template/issues"
+    "url": "https://github.com/Oxwillfollow/battleship/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Oxwillfollow/webpack-template.git"
+    "url": "git+https://github.com/Oxwillfollow/battleship.git"
   },
   "license": "ISC",
   "author": "",
@@ -20,11 +20,15 @@
     "deploy": "git subtree push --prefix dist origin gh-pages"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.0",
     "@eslint/js": "^9.39.2",
+    "babel-jest": "^30.3.0",
     "css-loader": "^7.1.2",
     "eslint": "^9.39.2",
     "globals": "^16.5.0",
     "html-webpack-plugin": "^5.6.5",
+    "jest": "^30.3.0",
     "prettier": "3.7.4",
     "style-loader": "^4.0.0",
     "webpack": "^5.103.0",
