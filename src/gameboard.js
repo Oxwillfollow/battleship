@@ -1,10 +1,18 @@
 import { Ship } from "./ship";
 
 export class Gameboard {
-  #board = [[]];
+  #board = [];
+  #shots = [];
 
   constructor(size) {
     this.size = size;
+
+    for (let x = 0; x < size; x++) {
+      this.#board[x] = [];
+      for (let y = 0; y < size; y++) {
+        this.#board[x].push(null);
+      }
+    }
   }
 
   placeShip(length, isHorizontal, x, y) {
@@ -25,6 +33,26 @@ export class Gameboard {
         for (let i = 0; i < ship.length; i++) {
           this.#board[x][y + i] = ship;
         }
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
+  receiveAttack(x, y) {
+    if (this.#shots.some((shot) => shot[0] === x && shot[1] === y))
+      throw Error("A shot has already been fired to this cell!");
+
+    this.#shots.push([x, y]);
+
+    let ship = this.#board[x][y];
+
+    if (ship) {
+      ship.hit();
+      if (ship.isSunk) {
+        console.log("Ship destroyed!");
       }
     }
   }
