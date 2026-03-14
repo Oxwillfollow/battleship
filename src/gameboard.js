@@ -4,9 +4,10 @@ export class Gameboard {
   #board = [];
   #shots = [];
 
-  constructor(size) {
+  constructor(size = 10) {
     this.size = size;
 
+    // create a 2 dimensional board array of `size` x `size`, assigning `null` to each cell
     for (let x = 0; x < size; x++) {
       this.#board[x] = [];
       for (let y = 0; y < size; y++) {
