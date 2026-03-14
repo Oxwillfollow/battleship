@@ -15,14 +15,12 @@ export class Gameboard {
     }
   }
 
-  placeShip(length, isHorizontal, x, y) {
+  placeShip(ship, x, y) {
     if (x < 0 || x >= this.size || y < 0 || y >= this.size)
       throw Error("Coordinates outside the bounds of the game board!");
 
-    if (length < 1) throw Error("Ship length needs to be at least 1!");
-    if (length > this.size) throw Error("Ship too large for the board!");
-
-    const ship = new Ship(length, isHorizontal);
+    if (ship.length < 1) throw Error("Ship length needs to be at least 1!");
+    if (ship.length > this.size) throw Error("Ship too large for the board!");
 
     if (this.#canPlaceShip(ship, x, y)) {
       if (ship.isHorizontal) {
