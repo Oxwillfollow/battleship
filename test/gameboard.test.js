@@ -1,4 +1,16 @@
 import { Gameboard } from "../src/gameboard";
+import { Ship } from "../src/ship";
+
+test("Create ship, sink it", () => {
+  const myShip = new Ship(3, true);
+
+  myShip.hit();
+  expect(myShip.isSunk()).toBe(false);
+  myShip.hit();
+  expect(myShip.isSunk()).toBe(false);
+  myShip.hit();
+  expect(myShip.isSunk()).toBe(true);
+});
 
 test("Add ships, destroy them", () => {
   const myGameboard = new Gameboard(10);
