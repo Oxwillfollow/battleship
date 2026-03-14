@@ -27,3 +27,14 @@ test("Add ship, destroy it", () => {
 
   expect(ship1.isSunk()).toBe(true);
 });
+
+test("Ships can't overlap", () => {
+  const myGameboard = new Gameboard(10);
+  const ship1 = new Ship(3, true);
+  const ship2 = new Ship(4, false);
+
+  expect(myGameboard.placeShip(ship1, 5, 5)).toBe(true);
+  expect(myGameboard.placeShip(ship2, 5, 5)).toBe(false);
+  expect(myGameboard.placeShip(ship2, 5, 4)).toBe(false);
+  expect(myGameboard.placeShip(ship2, 5, 6)).toBe(true);
+});
