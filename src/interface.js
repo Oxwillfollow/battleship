@@ -8,11 +8,17 @@ let player2 = null;
 export function init() {
   cacheDOM();
   resetGame();
+  bindEvents();
 }
 
 function cacheDOM() {
   myDOM.player1Board = document.getElementById("player1");
   myDOM.player2Board = document.getElementById("player2");
+  myDOM.resetBtn = document.getElementById("reset-btn");
+}
+
+function bindEvents() {
+  myDOM.resetBtn.addEventListener("click", resetGame);
 }
 
 function resetGame() {
@@ -79,7 +85,7 @@ function updateBoard(player, boardContainer) {
 }
 
 function clearBoard(boardContainer) {
-  while (boardContainer.childCount > 0) {
-    boardContainer.getChild(0).remove();
+  while (boardContainer.childElementCount > 0) {
+    boardContainer.firstChild.remove();
   }
 }
