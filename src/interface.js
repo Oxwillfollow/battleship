@@ -18,6 +18,7 @@ function cacheDOM() {
   myDOM.player1Board = document.getElementById("player1");
   myDOM.player2Board = document.getElementById("player2");
   myDOM.resetBtn = document.getElementById("reset-btn");
+  myDOM.turnTxt = document.getElementById("turn");
 }
 
 function bindEvents() {
@@ -26,6 +27,8 @@ function bindEvents() {
 
 function resetGame() {
   currentTurn = 0;
+  changeTurn();
+
   playerHuman = new Player("Player");
   playerComputer = new Player("Computer", true);
 
@@ -57,11 +60,23 @@ function createBoard(player, boardContainer) {
   }
 }
 
+function changeTurn() {
+  currentTurn++;
+
+  // human turns are odd
+  if (currentTurn % 2 !== 0)
+    myDOM.turnTxt.textContent = `Turn ${Math.round(currentTurn / 2)}: ${playerHuman.name}`;
+  else {
+    myDOM.turnTxt.textContent = `Turn ${Math.round(currentTurn / 2)}: ${playerComputer.name}`;
+    setTimeout(computerTurn, 700); // add delay to simulate computer thinking
+  }
+}
+
 function onEnemyCellClicked(evt) {
   let coords = evt.currentTarget.dataset.xy.split(", ");
 
-  // human turns are even
-  if (currentTurn % 2 === 0) {
+  // human turns are odd
+  if (currentTurn % 2 !== 0) {
     let result = playerComputer.gameBoard.receiveAttack(coords[0], coords[1]);
 
     if (result === "") return; // already tried this cell
@@ -72,8 +87,7 @@ function onEnemyCellClicked(evt) {
 
     updateAttackResult(result, evt.currentTarget);
 
-    currentTurn++;
-    computerTurn();
+    changeTurn();
   }
 }
 
@@ -114,7 +128,7 @@ function computerTurn() {
   let cell = myDOM.player1Board.querySelector(`[data-xy="${x}, ${y}"]`);
   updateAttackResult(result, cell);
 
-  currentTurn++;
+  changeTurn();
 }
 
 function addRandomShipsToPlayer(player) {
