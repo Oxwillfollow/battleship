@@ -39,8 +39,7 @@ export class Gameboard {
   }
 
   receiveAttack(x, y) {
-    if (this.shots.some((shot) => shot[0] === x && shot[1] === y))
-      throw Error("A shot has already been fired to this cell!");
+    if (this.shots.some((shot) => shot[0] === x && shot[1] === y)) return ""; // already fired here
 
     this.shots.push([x, y]);
 
@@ -48,10 +47,15 @@ export class Gameboard {
 
     if (ship) {
       ship.hit();
+      return "hit";
       if (ship.isSunk) {
         console.log("Ship destroyed!");
       }
+    } else {
+      return "missed";
     }
+
+    return true;
   }
 
   #canPlaceShip(ship, x, y) {

@@ -1,9 +1,12 @@
 import { Player } from "./player";
 import { Ship } from "./ship";
+import fireImg from "./images/fire.svg";
+import circleImg from "./images/circle.svg";
 
 const myDOM = {};
-let player1 = null;
-let player2 = null;
+let playerHuman = new Player("Player");
+let playerComputer = new Player("Computer", true);
+let currentTurn = 0;
 
 export function init() {
   cacheDOM();
@@ -22,20 +25,21 @@ function bindEvents() {
 }
 
 function resetGame() {
-  player1 = new Player("Player");
-  player2 = new Player("Computer", true);
+  currentTurn = 0;
+  playerHuman = new Player("Player");
+  playerComputer = new Player("Computer", true);
 
   clearBoard(myDOM.player1Board);
   clearBoard(myDOM.player2Board);
 
-  createBoard(player1, myDOM.player1Board);
-  createBoard(player2, myDOM.player2Board);
+  createBoard(playerHuman, myDOM.player1Board);
+  createBoard(playerComputer, myDOM.player2Board);
 
-  addRandomShipsToPlayer(player1);
-  addRandomShipsToPlayer(player2);
+  addRandomShipsToPlayer(playerHuman);
+  addRandomShipsToPlayer(playerComputer);
 
-  updateBoard(player1, myDOM.player1Board);
-  updateBoard(player2, myDOM.player2Board);
+  updateBoard(playerHuman, myDOM.player1Board);
+  updateBoard(playerComputer, myDOM.player2Board);
 }
 
 function createBoard(player, boardContainer) {
@@ -43,10 +47,47 @@ function createBoard(player, boardContainer) {
     for (let j = 0; j < player.gameBoard.size; j++) {
       let cell = document.createElement("div");
       cell.classList.add("gameboard-cell");
+      cell.style.position = "relative";
       cell.dataset.xy = `${j}, ${i}`;
+      if (player === playerComputer) {
+        cell.addEventListener("click", (evt) => onEnemyCellClicked(evt));
+      }
       boardContainer.appendChild(cell);
     }
   }
+}
+
+function onEnemyCellClicked(evt) {
+  let coords = evt.currentTarget.dataset.xy.split(", ");
+
+  // human turns are even
+  if (currentTurn % 2 === 0) {
+    let result = playerComputer.gameBoard.receiveAttack(coords[0], coords[1]);
+
+    if (result === "") return; // already tried this cell
+
+    console.log("fired a shot!");
+
+    let attackIcon = document.createElement("img");
+
+    if (result === "missed") {
+      attackIcon.src = circleImg;
+      console.log("missed!");
+    } else if (result === "hit") {
+      attackIcon.src = fireImg;
+      console.log("hit a ship!");
+    }
+    attackIcon.style.position = "absolute";
+    attackIcon.style.top = 0;
+    evt.currentTarget.appendChild(attackIcon);
+
+    currentTurn++;
+    computerTurn();
+  }
+}
+
+function computerTurn() {
+  // pick random cell that hasn't been fired yet
 }
 
 function addRandomShipsToPlayer(player) {
@@ -77,7 +118,7 @@ function updateBoard(player, boardContainer) {
         shipDiv.classList.add("ship");
         shipDiv.classList.add(`length-${ship.length}`);
 
-        let cell = boardContainer.querySelector(`[data-xy="${j}, ${i}"]`);
+        let cell = boardContainer.querySelector(`[data-xy="${i}, ${j}"]`);
         cell.appendChild(shipDiv);
       }
     }
