@@ -1,17 +1,15 @@
-import { Ship } from "./ship";
-
 export class Gameboard {
-  #board = [];
-  #shots = [];
+  board = [];
+  shots = [];
 
   constructor(size = 10) {
     this.size = size;
 
     // create a 2 dimensional board array of `size` x `size`, assigning `null` to each cell
     for (let x = 0; x < size; x++) {
-      this.#board[x] = [];
+      this.board[x] = [];
       for (let y = 0; y < size; y++) {
-        this.#board[x].push(null);
+        this.board[x].push(null);
       }
     }
   }
@@ -26,11 +24,11 @@ export class Gameboard {
     if (this.#canPlaceShip(ship, x, y)) {
       if (ship.isHorizontal) {
         for (let i = 0; i < ship.length; i++) {
-          this.#board[x + i][y] = ship;
+          this.board[x + i][y] = ship;
         }
       } else {
         for (let i = 0; i < ship.length; i++) {
-          this.#board[x][y + i] = ship;
+          this.board[x][y + i] = ship;
         }
       }
 
@@ -41,12 +39,12 @@ export class Gameboard {
   }
 
   receiveAttack(x, y) {
-    if (this.#shots.some((shot) => shot[0] === x && shot[1] === y))
+    if (this.shots.some((shot) => shot[0] === x && shot[1] === y))
       throw Error("A shot has already been fired to this cell!");
 
-    this.#shots.push([x, y]);
+    this.shots.push([x, y]);
 
-    let ship = this.#board[x][y];
+    let ship = this.board[x][y];
 
     if (ship) {
       ship.hit();
@@ -58,12 +56,16 @@ export class Gameboard {
 
   #canPlaceShip(ship, x, y) {
     if (ship.isHorizontal) {
+      if (this.size < x + ship.length) return false; // ship exceeds the bounds of the board
+
       for (let i = 0; i < ship.length; i++) {
-        if (this.#board[x + i][y]) return false;
+        if (this.board[x + i][y]) return false;
       }
     } else {
+      if (this.size < y + ship.length) return false; // ship exceeds the bounds of the board
+
       for (let i = 0; i < ship.length; i++) {
-        if (this.#board[x][y + i]) return false;
+        if (this.board[x][y + i]) return false;
       }
     }
 
