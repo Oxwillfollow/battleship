@@ -47,10 +47,10 @@ export class Gameboard {
 
     if (ship) {
       ship.hit();
-      return "hit";
-      if (ship.isSunk) {
+      if (ship.isSunk()) {
         console.log("Ship destroyed!");
       }
+      return "hit";
     } else {
       return "missed";
     }

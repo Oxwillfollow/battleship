@@ -70,24 +70,51 @@ function onEnemyCellClicked(evt) {
 
     let attackIcon = document.createElement("img");
 
-    if (result === "missed") {
-      attackIcon.src = circleImg;
-      console.log("missed!");
-    } else if (result === "hit") {
-      attackIcon.src = fireImg;
-      console.log("hit a ship!");
-    }
-    attackIcon.style.position = "absolute";
-    attackIcon.style.top = 0;
-    evt.currentTarget.appendChild(attackIcon);
+    updateAttackResult(result, evt.currentTarget);
 
     currentTurn++;
     computerTurn();
   }
 }
 
+function updateAttackResult(result, cell) {
+  let attackIcon = document.createElement("img");
+
+  if (result === "missed") {
+    attackIcon.src = circleImg;
+    console.log("missed!");
+  } else if (result === "hit") {
+    attackIcon.src = fireImg;
+    console.log("hit a ship!");
+  }
+  attackIcon.style.position = "absolute";
+  attackIcon.style.top = 0;
+  cell.appendChild(attackIcon);
+}
+
 function computerTurn() {
   // pick random cell that hasn't been fired yet
+  let cellsNotFiredYet = [];
+
+  for (let i = 0; i < playerHuman.gameBoard.size; i++) {
+    for (let j = 0; j < playerHuman.gameBoard.size; j++) {
+      cellsNotFiredYet.push([i, j]);
+    }
+  }
+
+  cellsNotFiredYet.filter(
+    (cell) => !playerHuman.gameBoard.shots.includes(cell),
+  );
+
+  let randomIndex = Math.floor(Math.random() * cellsNotFiredYet.length);
+  let x = cellsNotFiredYet[randomIndex][0];
+  let y = cellsNotFiredYet[randomIndex][1];
+
+  let result = playerHuman.gameBoard.receiveAttack(x, y);
+  let cell = myDOM.player1Board.querySelector(`[data-xy="${x}, ${y}"]`);
+  updateAttackResult(result, cell);
+
+  currentTurn++;
 }
 
 function addRandomShipsToPlayer(player) {
