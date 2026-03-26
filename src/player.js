@@ -5,5 +5,6 @@ export class Player {
     this.name = name;
     this.isComputer = isComputer;
     this.gameBoard = new Gameboard();
+    this.shipsSunk = 0;
   }
 }

@@ -17,6 +17,8 @@ export function init() {
 function cacheDOM() {
   myDOM.player1Board = document.getElementById("player1");
   myDOM.player2Board = document.getElementById("player2");
+  myDOM.player1ShipsRemainingTxt = document.getElementById("player1-ships");
+  myDOM.player2ShipsRemainingTxt = document.getElementById("player2-ships");
   myDOM.resetBtn = document.getElementById("reset-btn");
   myDOM.turnTxt = document.getElementById("turn");
 }
@@ -79,11 +81,7 @@ function onEnemyCellClicked(evt) {
   if (currentTurn % 2 !== 0) {
     let result = playerComputer.gameBoard.receiveAttack(coords[0], coords[1]);
 
-    if (result === "") return; // already tried this cell
-
-    console.log("fired a shot!");
-
-    let attackIcon = document.createElement("img");
+    if (result.target === "invalid") return; // already tried this cell
 
     updateAttackResult(result, evt.currentTarget);
 
@@ -94,12 +92,22 @@ function onEnemyCellClicked(evt) {
 function updateAttackResult(result, cell) {
   let attackIcon = document.createElement("img");
 
-  if (result === "missed") {
+  if (result.target === "empty") {
     attackIcon.src = circleImg;
     console.log("missed!");
-  } else if (result === "hit") {
+  } else {
     attackIcon.src = fireImg;
     console.log("hit a ship!");
+    if (result.target.isSunk()) {
+      console.log("ship sunk!");
+      if (currentTurn % 2 !== 0) {
+        playerComputer.shipsSunk++;
+        myDOM.player2ShipsRemainingTxt.textContent = `Ships remaining: ${5 - playerComputer.shipsSunk}`;
+      } else {
+        playerHuman.shipsSunk++;
+        myDOM.player1ShipsRemainingTxt.textContent = `Ships remaining: ${5 - playerHuman.shipsSunk}`;
+      }
+    }
   }
   attackIcon.style.position = "absolute";
   attackIcon.style.top = 0;
@@ -126,6 +134,10 @@ function computerTurn() {
 
   let result = playerHuman.gameBoard.receiveAttack(x, y);
   let cell = myDOM.player1Board.querySelector(`[data-xy="${x}, ${y}"]`);
+
+  if (result.target === "invalid")
+    throw Error("Computer chose an invalid move!");
+
   updateAttackResult(result, cell);
 
   changeTurn();

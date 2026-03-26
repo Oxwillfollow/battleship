@@ -39,7 +39,8 @@ export class Gameboard {
   }
 
   receiveAttack(x, y) {
-    if (this.shots.some((shot) => shot[0] === x && shot[1] === y)) return ""; // already fired here
+    if (this.shots.some((shot) => shot[0] === x && shot[1] === y))
+      return { target: "invalid" }; // already fired here
 
     this.shots.push([x, y]);
 
@@ -47,15 +48,10 @@ export class Gameboard {
 
     if (ship) {
       ship.hit();
-      if (ship.isSunk()) {
-        console.log("Ship destroyed!");
-      }
-      return "hit";
+      return { target: ship };
     } else {
-      return "missed";
+      return { target: "empty" };
     }
-
-    return true;
   }
 
   #canPlaceShip(ship, x, y) {
