@@ -120,12 +120,15 @@ function computerTurn() {
 
   for (let i = 0; i < playerHuman.gameBoard.size; i++) {
     for (let j = 0; j < playerHuman.gameBoard.size; j++) {
-      cellsNotFiredYet.push([i, j]);
+      cellsNotFiredYet.push([j, i]);
     }
   }
 
-  cellsNotFiredYet.filter(
-    (cell) => !playerHuman.gameBoard.shots.includes(cell),
+  cellsNotFiredYet = cellsNotFiredYet.filter(
+    (cell) =>
+      !playerHuman.gameBoard.shots.some(
+        (shot) => shot[0] === cell[0] && shot[1] === cell[1],
+      ),
   );
 
   let randomIndex = Math.floor(Math.random() * cellsNotFiredYet.length);
