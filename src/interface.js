@@ -7,6 +7,8 @@ const myDOM = {};
 let playerHuman = new Player("Player");
 let playerComputer = new Player("Computer", true);
 let currentTurn = 0;
+const SHIP_COUNT = 5;
+let isGameOver = false;
 
 export function init() {
   cacheDOM();
@@ -28,9 +30,6 @@ function bindEvents() {
 }
 
 function resetGame() {
-  currentTurn = 0;
-  changeTurn();
-
   playerHuman = new Player("Player");
   playerComputer = new Player("Computer", true);
 
@@ -44,6 +43,13 @@ function resetGame() {
   addRandomShipsToPlayer(playerComputer);
 
   drawPlayerBoard(playerHuman, myDOM.player1Board);
+
+  myDOM.player1ShipsRemainingTxt.textContent = `Ships remaining: ${SHIP_COUNT}`;
+  myDOM.player2ShipsRemainingTxt.textContent = `Ships remaining: ${SHIP_COUNT}`;
+
+  currentTurn = 0;
+  isGameOver = false;
+  changeTurn();
 }
 
 function createBoard(player, boardContainer) {
@@ -62,30 +68,38 @@ function createBoard(player, boardContainer) {
 }
 
 function changeTurn() {
-  currentTurn++;
+  // check if game is over
+  if (playerComputer.shipsSunk >= SHIP_COUNT) {
+    myDOM.turnTxt.textContent = `Game Over: ${playerHuman.name} wins!`;
+    isGameOver = true;
+  } else if (playerHuman.shipsSunk >= SHIP_COUNT) {
+    myDOM.turnTxt.textContent = `Game Over: ${playerComputer.name} wins!`;
+    isGameOver = true;
+  } else {
+    currentTurn++;
 
-  // human turns are odd
-  if (currentTurn % 2 !== 0)
-    myDOM.turnTxt.textContent = `Turn ${Math.round(currentTurn / 2)}: ${playerHuman.name}`;
-  else {
-    myDOM.turnTxt.textContent = `Turn ${Math.round(currentTurn / 2)}: ${playerComputer.name}`;
-    setTimeout(computerTurn, 700); // add delay to simulate computer thinking
+    // human turns are odd
+    if (currentTurn % 2 !== 0)
+      myDOM.turnTxt.textContent = `Turn ${Math.round(currentTurn / 2)}: ${playerHuman.name}`;
+    else {
+      myDOM.turnTxt.textContent = `Turn ${Math.round(currentTurn / 2)}: ${playerComputer.name}`;
+      setTimeout(computerTurn, 700); // add delay to simulate computer thinking
+    }
   }
 }
 
 function onEnemyCellClicked(evt) {
+  if (isGameOver || currentTurn % 2 === 0) return;
+
   let coords = evt.currentTarget.dataset.xy.split(", ");
 
-  // human turns are odd
-  if (currentTurn % 2 !== 0) {
-    let result = playerComputer.gameBoard.receiveAttack(coords[0], coords[1]);
+  let result = playerComputer.gameBoard.receiveAttack(coords[0], coords[1]);
 
-    if (result.target === "invalid") return; // already tried this cell
+  if (result.target === "invalid") return; // already tried this cell
 
-    updateAttackResult(result, evt.currentTarget);
+  updateAttackResult(result, evt.currentTarget);
 
-    changeTurn();
-  }
+  changeTurn();
 }
 
 function updateAttackResult(result, cell) {
@@ -96,25 +110,22 @@ function updateAttackResult(result, cell) {
     attackIcon.width = 16;
     attackIcon.height = 16;
     cell.classList.add("water");
-    console.log("missed!");
   } else {
     attackIcon.src = fireImg;
     attackIcon.width = 32;
     attackIcon.height = 32;
     attackIcon.style.position = "absolute";
     attackIcon.style.top = 0;
-    console.log("hit a ship!");
 
     if (currentTurn % 2 !== 0) drawShip(result.target, cell);
 
     if (result.target.isSunk()) {
-      console.log("ship sunk!");
       if (currentTurn % 2 !== 0) {
         playerComputer.shipsSunk++;
-        myDOM.player2ShipsRemainingTxt.textContent = `Ships remaining: ${5 - playerComputer.shipsSunk}`;
+        myDOM.player2ShipsRemainingTxt.textContent = `Ships remaining: ${SHIP_COUNT - playerComputer.shipsSunk}`;
       } else {
         playerHuman.shipsSunk++;
-        myDOM.player1ShipsRemainingTxt.textContent = `Ships remaining: ${5 - playerHuman.shipsSunk}`;
+        myDOM.player1ShipsRemainingTxt.textContent = `Ships remaining: ${SHIP_COUNT - playerHuman.shipsSunk}`;
       }
     }
   }
@@ -155,9 +166,9 @@ function computerTurn() {
 }
 
 function addRandomShipsToPlayer(player) {
-  // add 5 ships to each player with different lengths, 5 to 1 square
+  // add ships to each player with different lengths
 
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= SHIP_COUNT; i++) {
     // make the ship horizontal or vertical randomly
     let random = Math.floor(Math.random() * 2);
     let ship = new Ship(i, random);
