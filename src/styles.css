@@ -3,7 +3,10 @@
 .gameboard-cell {
   width: 32px;
   height: 32px;
-  background-color: azure;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(247, 255, 255);
   border: 1px solid black;
   user-select: none;
 }
@@ -43,23 +46,27 @@ body {
   width: 100vw;
 }
 
+.water {
+  background-color: rgb(36, 95, 255);
+}
+
 .ship {
   width: 100%;
   height: 100%;
 }
 
 .ship.length-1 {
-  background-color: rgb(214, 171, 191);
+  background-color: rgb(255, 192, 208);
 }
 .ship.length-2 {
-  background-color: rgb(161, 231, 236);
+  background-color: rgb(155, 255, 217);
 }
 .ship.length-3 {
-  background-color: rgb(152, 216, 157);
+  background-color: rgb(170, 255, 163);
 }
 .ship.length-4 {
-  background-color: rgb(228, 206, 158);
+  background-color: rgb(255, 229, 173);
 }
 .ship.length-5 {
-  background-color: rgb(203, 184, 238);
+  background-color: rgb(207, 181, 255);
 }

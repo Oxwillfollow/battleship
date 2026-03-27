@@ -43,8 +43,7 @@ function resetGame() {
   addRandomShipsToPlayer(playerHuman);
   addRandomShipsToPlayer(playerComputer);
 
-  updateBoard(playerHuman, myDOM.player1Board);
-  updateBoard(playerComputer, myDOM.player2Board);
+  drawPlayerBoard(playerHuman, myDOM.player1Board);
 }
 
 function createBoard(player, boardContainer) {
@@ -94,10 +93,20 @@ function updateAttackResult(result, cell) {
 
   if (result.target === "empty") {
     attackIcon.src = circleImg;
+    attackIcon.width = 16;
+    attackIcon.height = 16;
+    cell.classList.add("water");
     console.log("missed!");
   } else {
     attackIcon.src = fireImg;
+    attackIcon.width = 32;
+    attackIcon.height = 32;
+    attackIcon.style.position = "absolute";
+    attackIcon.style.top = 0;
     console.log("hit a ship!");
+
+    if (currentTurn % 2 !== 0) drawShip(result.target, cell);
+
     if (result.target.isSunk()) {
       console.log("ship sunk!");
       if (currentTurn % 2 !== 0) {
@@ -109,8 +118,7 @@ function updateAttackResult(result, cell) {
       }
     }
   }
-  attackIcon.style.position = "absolute";
-  attackIcon.style.top = 0;
+
   cell.appendChild(attackIcon);
 }
 
@@ -165,20 +173,26 @@ function addRandomShipsToPlayer(player) {
   }
 }
 
-function updateBoard(player, boardContainer) {
+function drawPlayerBoard(player, boardContainer) {
   for (let i = 0; i < player.gameBoard.size; i++) {
     for (let j = 0; j < player.gameBoard.size; j++) {
       let ship = player.gameBoard.board[i][j];
+      let cell = boardContainer.querySelector(`[data-xy="${i}, ${j}"]`);
       if (ship) {
-        let shipDiv = document.createElement("div");
-        shipDiv.classList.add("ship");
-        shipDiv.classList.add(`length-${ship.length}`);
-
-        let cell = boardContainer.querySelector(`[data-xy="${i}, ${j}"]`);
-        cell.appendChild(shipDiv);
+        drawShip(ship, cell);
+      } else {
+        cell.classList.add("water");
       }
     }
   }
+}
+
+function drawShip(ship, cell) {
+  let shipDiv = document.createElement("div");
+  shipDiv.classList.add("ship");
+  shipDiv.classList.add(`length-${ship.length}`);
+
+  cell.appendChild(shipDiv);
 }
 
 function clearBoard(boardContainer) {
