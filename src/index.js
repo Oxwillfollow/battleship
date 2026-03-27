@@ -1,4 +1,4 @@
 import "./styles.css";
-import { init } from "./interface";
+import { init } from "./gamestate";
 
 addEventListener("DOMContentLoaded", init);

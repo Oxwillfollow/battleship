@@ -1,28 +1,20 @@
 import { Player } from "./player";
 import { Ship } from "./ship";
+import { cacheDOM } from "./domContent";
 import fireImg from "./images/fire.svg";
 import circleImg from "./images/circle.svg";
 
-const myDOM = {};
+let myDOM = {};
+const SHIP_COUNT = 5;
 let playerHuman = new Player("Player");
 let playerComputer = new Player("Computer", true);
 let currentTurn = 0;
-const SHIP_COUNT = 5;
 let isGameOver = false;
 
 export function init() {
-  cacheDOM();
-  resetGame();
+  myDOM = cacheDOM();
   bindEvents();
-}
-
-function cacheDOM() {
-  myDOM.player1Board = document.getElementById("player1");
-  myDOM.player2Board = document.getElementById("player2");
-  myDOM.player1ShipsRemainingTxt = document.getElementById("player1-ships");
-  myDOM.player2ShipsRemainingTxt = document.getElementById("player2-ships");
-  myDOM.resetBtn = document.getElementById("reset-btn");
-  myDOM.turnTxt = document.getElementById("turn");
+  resetGame();
 }
 
 function bindEvents() {
@@ -150,9 +142,40 @@ function computerTurn() {
       ),
   );
 
-  let randomIndex = Math.floor(Math.random() * cellsNotFiredYet.length);
-  let x = cellsNotFiredYet[randomIndex][0];
-  let y = cellsNotFiredYet[randomIndex][1];
+  let randomIndex;
+  let x;
+  let y;
+
+  // if previous shot was a hit, try a random adjacent cell - else a totally random cell
+
+  let lastShot;
+  if (playerHuman.gameBoard.shots.length >= 1) {
+    lastShot =
+      playerHuman.gameBoard.shots[playerHuman.gameBoard.shots.length - 1];
+  }
+
+  if (lastShot && playerHuman.gameBoard.board[lastShot[0]][lastShot[1]]) {
+    let validAdjacentCells = [];
+    let adjacentCells = [
+      [lastShot[0] + 1, lastShot[1]],
+      [lastShot[0] - 1, lastShot[1]],
+      [lastShot[0], lastShot[1] + 1],
+      [lastShot[0], lastShot[1] - 1],
+    ];
+
+    validAdjacentCells = adjacentCells.filter((cell) =>
+      cellsNotFiredYet.some(
+        (shot) => shot[0] === cell[0] && shot[1] === cell[1],
+      ),
+    );
+    randomIndex = Math.floor(Math.random() * validAdjacentCells.length);
+    x = validAdjacentCells[randomIndex][0];
+    y = validAdjacentCells[randomIndex][1];
+  } else {
+    randomIndex = Math.floor(Math.random() * cellsNotFiredYet.length);
+    x = cellsNotFiredYet[randomIndex][0];
+    y = cellsNotFiredYet[randomIndex][1];
+  }
 
   let result = playerHuman.gameBoard.receiveAttack(x, y);
   let cell = myDOM.player1Board.querySelector(`[data-xy="${x}, ${y}"]`);
