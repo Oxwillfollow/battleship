@@ -6,9 +6,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgb(247, 255, 255);
+  background-color: rgb(255, 250, 247);
   border: 1px solid black;
   user-select: none;
+}
+
+#player2 > .gameboard-cell:not(:has(*)):hover {
+  background-color: rgb(255, 206, 184);
+  cursor: pointer;
 }
 
 .gameboard {
@@ -22,7 +27,7 @@
   display: flex;
 
   justify-content: center;
-  gap: 128px;
+  gap: 100px;
   height: 100%;
 }
 
@@ -30,7 +35,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 64px;
+  gap: 80px;
 }
 
 h1 {
@@ -44,6 +49,7 @@ h1 {
 body {
   height: 100vh;
   width: 100vw;
+  background-color: rgb(255, 247, 244);
 }
 
 .water {
@@ -69,4 +75,17 @@ body {
 }
 .ship.length-5 {
   background-color: rgb(207, 181, 255);
+}
+
+button {
+  border: 0;
+  border-radius: 8px;
+  background-color: rgb(255, 221, 205);
+  color: black;
+  padding: 8px 16px;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: rgb(255, 206, 184);
 }
